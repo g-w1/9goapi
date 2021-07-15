@@ -17,7 +17,6 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
 		// make sure the auth matches up
-
 		auth := r.FormValue("auth")
 		if auth == "" {
 			fmt.Fprintf(w, "need auth key in form\n")
@@ -43,14 +42,14 @@ func main() {
 		}
 
 		// write the data to a temporary file
-		err = ioutil.WriteFile("/tmp/9goapi", dat, 0777)
+		err = ioutil.WriteFile("/tmp/toexec", dat, 0777)
 		if err != nil {
 			fmt.Fprintf(w, "WriteFile() err: %v\n", err)
 			return
 		}
 
 		// run it
-		cmd := exec.Command("/tmp/9goapi")
+		cmd := exec.Command("/tmp/toexec")
 		out, err := cmd.Output()
 		if err != nil {
 			fmt.Fprintf(w, "cmd.Output() err: %v\n", err)
