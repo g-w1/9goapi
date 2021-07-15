@@ -6,16 +6,30 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"os"
 )
 
 func main() {
+	authkey, isthere := os.LookupEnv("9apiauth")
+	if !isthere {
+		log.Fatal("need 9apiauth environment variable to authenticate requests")
+	}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// parse the file from the form?
-		if err := r.ParseForm(); err != nil {
-			fmt.Fprintf(w, "ParseForm() err: %v\n", err)
+
+		// make sure the auth matches up
+
+		auth := r.FormValue("auth")
+		if auth == "" {
+			fmt.Fprintf(w, "need auth key in form\n")
+			return
+		}
+		
+		if auth != authkey {
+			fmt.Fprintf(w, "auth key in form is wrong\n")
 			return
 		}
 
+		// parse the file from the form
 		f, _, err := r.FormFile("toexec")
 		if err != nil {
 			fmt.Fprintf(w, "FormFile() err: %v\n", err)
